@@ -13,7 +13,7 @@ export default function Profile() {
   const { userId } = useParams();
   const user = useSelector((state) => state.auth.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Новое состояние для модального окна удаления
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
 
   const fetchUserProfile = async (id) => {
@@ -49,8 +49,8 @@ export default function Profile() {
       });
 
       if (response.status === 200) {
-        await dispatch(logout()); // Выходим из системы после удаления
-        navigate("/"); // Перенаправляем на главную страницу
+        await dispatch(logout());
+        navigate("/");
       }
     } catch (error) {
       console.error("Ошибка при удалении профиля:", error);
@@ -73,7 +73,6 @@ export default function Profile() {
 
   return (
     <div className="mx-auto">
-      {/* Модальное окно для выхода */}
       <ConfirmModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -86,7 +85,6 @@ export default function Profile() {
         actionText="Выйти"
       />
 
-      {/* Модальное окно для удаления профиля */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
@@ -97,7 +95,7 @@ export default function Profile() {
         title="Удаление профиля"
         message="Вы уверены, что хотите удалить свой профиль? Это действие нельзя отменить."
         actionText="Удалить"
-        actionButtonClass="bg-red-700 hover:bg-red-500" // Красная кнопка для удаления
+        actionButtonClass="bg-red-700 hover:bg-red-500"
       />
 
       <ProfileHeader
@@ -105,7 +103,7 @@ export default function Profile() {
         isOwnProfile={isOwnProfile}
         isAdmin={isAdmin}
         onLogout={() => setIsModalOpen(true)}
-        onDelete={() => setIsDeleteModalOpen(true)} // Передаем обработчик удаления
+        onDelete={() => setIsDeleteModalOpen(true)}
       />
       <ProfileNav isOwnProfile={isOwnProfile} isAdmin={isAdmin} />
       <Outlet context={{ profileUser, isOwnProfile }} />

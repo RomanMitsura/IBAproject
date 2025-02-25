@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../axios"; // Импортируем Axios для отправки запросов
+import axios from "../axios";
 import { Link, useNavigate } from "react-router-dom";
 import { showSuccess } from "./Notification";
 
