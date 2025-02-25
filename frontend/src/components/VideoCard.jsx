@@ -25,7 +25,6 @@ export default function VideoCard({
 
   const formattedViews = formatViews(videoViews);
 
-  // Обрезаем title до 20 символов с многоточием
   const truncatedTitle =
     videoTitle.length > 33 ? videoTitle.slice(0, 33) + "..." : videoTitle;
 

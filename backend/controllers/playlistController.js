@@ -11,7 +11,6 @@ export const getUserPlaylists = async (req, res) => {
       populate: { path: "user", select: "fullname avatarUrl" },
     });
 
-    // Преобразуем пути в полные URL
     const transformedPlaylists = playlists.map((playlist) => {
       const videos = playlist.videos.map((video) => {
         const fullVideoImageUrl = video.videoImageUrl
@@ -56,7 +55,6 @@ export const getPublicPlaylistsByUser = async (req, res) => {
       populate: { path: "user", select: "fullname avatarUrl" },
     });
 
-    // Преобразуем пути в полные URL
     const transformedPlaylists = playlists.map((playlist) => {
       const videos = playlist.videos.map((video) => {
         const fullVideoImageUrl = video.videoImageUrl
@@ -104,7 +102,7 @@ export const createPlaylist = async (req, res) => {
       description: description || "",
       user: userId,
       videos: [],
-      isPublic: isPublic || false, // Учитываем публичность
+      isPublic: isPublic || false,
     });
     await playlist.save();
 
@@ -140,7 +138,7 @@ export const updatePlaylist = async (req, res) => {
 
     if (title) playlist.title = title;
     if (description !== undefined) playlist.description = description;
-    if (isPublic !== undefined) playlist.isPublic = isPublic; // Обновляем публичность
+    if (isPublic !== undefined) playlist.isPublic = isPublic;
 
     await playlist.save();
 

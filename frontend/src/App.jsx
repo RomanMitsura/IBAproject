@@ -8,7 +8,6 @@ import { NotificationContainer } from "./components/Notification";
 
 export default function App() {
   const dispatch = useDispatch();
-  // const user = useSelector((state) => state.auth.user);
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
 
   useEffect(() => {

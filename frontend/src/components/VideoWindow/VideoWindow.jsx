@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"; // Добавляем useDispatch
 import axios from "../../axios";
 import { showSuccess, showError } from "../Notification";
+import { fetchAuthMe } from "../../redux/slices/auth"; // Импортируем fetchAuthMe
 import VideoPlayer from "./VideoPlayer";
 import VideoControls from "./VideoControls";
 import VideoInfo from "./VideoInfo";
@@ -20,7 +21,9 @@ export default function VideoWindow() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const { videoId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Для вызова fetchAuthMe
   const user = useSelector((state) => state.auth.user);
+  const isAuthChecked = useSelector((state) => state.auth.isAuthChecked); // Проверка авторизации
   const MAX_VIEWS_FOR_GUEST = 10;
 
   const getViewCount = () =>
@@ -29,6 +32,61 @@ export default function VideoWindow() {
     const currentCount = getViewCount();
     localStorage.setItem("guestVideoViews", currentCount + 1);
   };
+
+  useEffect(() => {
+    // Проверяем авторизацию при монтировании, если есть токен
+    if (localStorage.getItem("token") && !isAuthChecked) {
+      dispatch(fetchAuthMe());
+    } else if (!localStorage.getItem("token")) {
+      // Если токена нет, сразу считаем проверку завершенной
+      dispatch({ type: "auth/setAuthChecked" }); // Может потребоваться отдельный action
+    }
+  }, [dispatch, isAuthChecked]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        // Ждем завершения проверки авторизации
+        if (!isAuthChecked) return;
+
+        // Проверка лимита только для гостей
+        if (!user) {
+          const viewCount = getViewCount();
+          if (viewCount >= MAX_VIEWS_FOR_GUEST) {
+            setShowLimitModal(true);
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        const token = user ? localStorage.getItem("token") : null;
+        const [videoRes, playlistsRes] = await Promise.all([
+          axios.get(`/videos/${videoId}`),
+          user && token
+            ? axios.get("/playlists", {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+            : Promise.resolve({ data: { playlists: [] } }),
+        ]);
+
+        setData(videoRes.data.video);
+        setPlaylists(playlistsRes.data.playlists);
+
+        if (!user) {
+          incrementViewCount();
+        }
+      } catch (err) {
+        console.warn("Ошибка при загрузке данных:", err);
+        setData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [videoId, user, isAuthChecked]);
 
   const handleDelete = async () => {
     if (!user) {
@@ -57,40 +115,6 @@ export default function VideoWindow() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        if (!user) {
-          const viewCount = getViewCount();
-          if (viewCount >= MAX_VIEWS_FOR_GUEST && !user) {
-            setShowLimitModal(true);
-            setIsLoading(false);
-            return;
-          }
-        }
-        const token = user ? localStorage.getItem("token") : null;
-        const [videoRes, playlistsRes] = await Promise.all([
-          axios.get(`/videos/${videoId}`),
-          user && token
-            ? axios.get("/playlists", {
-                headers: { Authorization: `Bearer ${token}` },
-              })
-            : Promise.resolve({ data: { playlists: [] } }),
-        ]);
-        setData(videoRes.data.video);
-        setPlaylists(playlistsRes.data.playlists);
-        if (!user) incrementViewCount();
-      } catch (err) {
-        console.warn("Ошибка при загрузке данных:", err);
-        setData(null);
-      } finally {
-        if (!showLimitModal) setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [videoId, user]);
 
   const handleLike = async () => {
     if (!user) {
@@ -224,7 +248,6 @@ export default function VideoWindow() {
                 onDislike={handleDislike}
               />
             </div>
-
             <PlaylistSelector
               user={user}
               playlists={playlists}

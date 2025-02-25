@@ -8,7 +8,6 @@ export const addVideo = async (req, res) => {
   try {
     const { title, description, categories } = req.body;
 
-    // Проверяем, что все обязательные поля заполнены
     if (
       !title ||
       !description ||
@@ -111,7 +110,6 @@ export const getOneVideo = async (req, res) => {
     video.views++;
     await video.save();
 
-    // Преобразуем пути в полные URL
     const fullVideoUrl = `${req.protocol}://${req.get("host")}/${video.videoUrl.replace(/\\/g, "/")}`;
     const fullVideoImageUrl = `${req.protocol}://${req.get("host")}/${video.videoImageUrl.replace(/\\/g, "/")}`;
     const fullAvatarUrl = video.user.avatarUrl
@@ -155,15 +153,13 @@ export const getAllVideos = async (req, res) => {
     const { category, sortBy, search } = req.query;
     const filter = {};
 
-    // Фильтрация по категории (массив ObjectId)
     if (category) {
       if (!mongoose.Types.ObjectId.isValid(category)) {
         return res.status(400).json({ message: "Некорректный ID категории" });
       }
-      filter.categories = category; // Ищем видео с указанным ID в массиве categories
+      filter.categories = category;
     }
 
-    // Поиск по заголовку или описанию
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: "i" } },
@@ -171,7 +167,6 @@ export const getAllVideos = async (req, res) => {
       ];
     }
 
-    // Настройка сортировки
     const sortOptions = {};
     if (sortBy === "views") {
       sortOptions.views = -1;
@@ -181,14 +176,12 @@ export const getAllVideos = async (req, res) => {
       sortOptions.createdAt = -1;
     }
 
-    // Получение видео из базы данных
     const videos = await Video.find(filter)
       .sort(sortOptions)
       .populate("user", "fullname avatarUrl")
       .populate("categories", "name")
       .exec();
 
-    // Если видео не найдены, возвращаем сообщение
     if (videos.length === 0) {
       return res.status(200).json({
         success: true,
@@ -199,7 +192,6 @@ export const getAllVideos = async (req, res) => {
       });
     }
 
-    // Преобразование путей в полные URL
     const formattedVideos = videos.map((video) => {
       const fullVideoUrl = `${req.protocol}://${req.get("host")}/${video.videoUrl.replace(/\\/g, "/")}`;
       const fullVideoImageUrl = `${req.protocol}://${req.get("host")}/${video.videoImageUrl.replace(/\\/g, "/")}`;
@@ -319,7 +311,6 @@ export const editVideo = async (req, res) => {
     if (title) video.title = title;
     if (description) video.description = description;
 
-    // Обновляем категории, если они переданы
     if (categories) {
       let categoriesArray;
       try {

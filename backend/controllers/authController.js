@@ -91,6 +91,7 @@ export const authLogin = async (req, res) => {
   }
 };
 
+//Проверка авторизации
 export const checkAuth = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {

@@ -16,7 +16,7 @@ export const addComment = async (req, res) => {
       return res.status(404).json({ message: "Видео не найдено" });
     }
 
-    const userId = req.user?.userId; // Получение ID авторизованного пользователя
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ message: "Пользователь не авторизован" });
     }
@@ -110,19 +110,16 @@ export const getComments = async (req, res) => {
       return res.status(404).json({ message: "Видео не найдено" });
     }
 
-    // Преобразуем комментарии с проверками
     const comments = video.comments
       .map((comment) => {
-        // Проверяем, что comment существует и является объектом
         if (!comment || typeof comment !== "object") {
-          return null; // Пропускаем некорректный комментарий
+          return null;
         }
 
-        // Проверяем, что user подгружен и имеет данные
         const user = comment.user && comment.user._doc ? comment.user._doc : {};
 
         return {
-          ...comment._doc, // Распаковываем данные комментария
+          ...comment._doc,
           user: {
             _id: user._id || null,
             fullname: user.fullname || "Неизвестный пользователь",
@@ -132,7 +129,7 @@ export const getComments = async (req, res) => {
           },
         };
       })
-      .filter((comment) => comment !== null); // Убираем null-комментарии из результата
+      .filter((comment) => comment !== null);
 
     res.status(200).json({
       success: true,

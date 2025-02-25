@@ -13,13 +13,11 @@ export const editUser = async (req, res) => {
     const { userId } = req.params;
     const { fullname, email, currentPassword, newPassword } = req.body;
 
-    // Проверяем, существует ли пользователь
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
 
-    // Проверяем права доступа
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const isAdmin = decoded.role === "admin";
@@ -30,13 +28,10 @@ export const editUser = async (req, res) => {
         .json({ message: "У вас нет прав для редактирования этого профиля" });
     }
 
-    // Обновляем данные пользователя
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
 
-    // Обработка аватара
     if (req.file) {
-      // Если уже есть предыдущий аватар и он не дефолтный, удаляем его
       if (user.avatarUrl && !user.avatarUrl.startsWith("https://")) {
         const oldAvatarPath = path.join(
           process.cwd(),
@@ -44,15 +39,13 @@ export const editUser = async (req, res) => {
           path.basename(user.avatarUrl)
         );
         if (fs.existsSync(oldAvatarPath)) {
-          fs.unlinkSync(oldAvatarPath); // Удаляем старый файл
+          fs.unlinkSync(oldAvatarPath);
           console.log(`Удален старый аватар: ${oldAvatarPath}`);
         }
       }
-      // Устанавливаем новый аватар
       user.avatarUrl = `/uploads/${req.file.filename}`;
     }
 
-    // Изменение пароля
     if (newPassword) {
       if (!currentPassword) {
         return res.status(400).json({
@@ -91,16 +84,13 @@ export const editUser = async (req, res) => {
 // Удаление пользователя
 export const deleteUser = async (req, res) => {
   try {
-    const { userId } = req.params; // ID пользователя, которого удаляем
-
-    // Проверяем, существует ли пользователь
+    const { userId } = req.params;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
 
-    // Проверяем права доступа
-    const currentUser = req.user; // Текущий авторизованный пользователь
+    const currentUser = req.user;
     const isAdmin = currentUser.role === "admin";
     const isOwner = currentUser.userId === userId;
 
@@ -110,15 +100,13 @@ export const deleteUser = async (req, res) => {
         .json({ message: "У вас нет прав для удаления этого профиля" });
     }
 
-    // Удаляем аватарку, если она существует
     if (user.avatarUrl) {
       const avatarPath = path.join(process.cwd(), user.avatarUrl);
       if (fs.existsSync(avatarPath)) {
-        fs.unlinkSync(avatarPath); // Удаляем файл аватарки
+        fs.unlinkSync(avatarPath);
       }
     }
 
-    // Удаляем пользователя из базы данных
     await User.findOneAndDelete({ _id: userId });
 
     res.status(200).json({

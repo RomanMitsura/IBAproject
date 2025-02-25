@@ -4,7 +4,6 @@ const instance = axios.create({
   baseURL: "http://localhost:4444",
 });
 
-// Интерцептор для добавления токена в заголовки запроса
 instance.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {

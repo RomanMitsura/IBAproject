@@ -14,7 +14,7 @@
 
 .truncate-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Максимум 2 строки */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -22,7 +22,7 @@
 
 @media (max-width: 640px) {
   .truncate-text {
-    -webkit-line-clamp: 1; /* На маленьких экранах только 1 строка */
+    -webkit-line-clamp: 1;
   }
 }
 
@@ -43,8 +43,8 @@
 }
 
 .comment-text {
-  word-wrap: break-word; /* Перенос длинных слов */
-  overflow-wrap: break-word; /* Альтернативный перенос */
-  max-width: 100%; /* Ограничивает ширину текста */
-  white-space: normal; /* Разрешает перенос строк */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  white-space: normal;
 }

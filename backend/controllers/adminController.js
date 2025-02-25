@@ -28,7 +28,7 @@ export const createCategory = async (req, res) => {
     }
     const category = new Category({
       name,
-      createdBy: req.user.userId, // Изменено с _id на userId
+      createdBy: req.user.userId,
     });
     await category.save();
     res.json(category);

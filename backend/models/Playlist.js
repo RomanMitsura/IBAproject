@@ -24,7 +24,7 @@ const playlistSchema = new mongoose.Schema(
     },
     isPublic: {
       type: Boolean,
-      default: false, // По умолчанию приватный
+      default: false,
     },
   },
   {
