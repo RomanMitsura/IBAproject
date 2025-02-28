@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import { validationResult } from "express-validator";
 
 dotenv.config();
@@ -13,15 +12,12 @@ export const authRegister = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: "Ошибка валидации", error: errors });
+      return res.status(400).json({ message: errors.array()[0].msg });
     }
 
     const { email, fullname, password, avatarUrl } = req.body;
 
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res
         .status(400)
@@ -44,29 +40,30 @@ export const authRegister = async (req, res) => {
       .json({ message: "Пользователь успешно добавлен", user: newUser });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
 //Авторизация
 export const authLogin = async (req, res) => {
   try {
-    const { password, email } = req.body;
-
-    if (!password || !email) {
-      console.log("Недостаточно данных для входа");
-      return res.status(400).json({ message: "Введите пароль и email" });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
     }
+
+    const { password, email } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
       console.log("Пользователь не найден");
-      return res.status(400).json({ message: "Неверный логин или пароль" });
+      return res.status(400).json({ message: "Неверный email или пароль" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       console.log("Неверный пароль");
-      return res.status(400).json({ message: "Неверный логин или пароль" });
+      return res.status(400).json({ message: "Неверный email или пароль" });
     }
 
     const token = jwt.sign({ userId: user._id, role: user.role }, jwtSecret, {
@@ -99,7 +96,7 @@ export const checkAuth = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, jwtSecret); // Проверяем токен
+    const decoded = jwt.verify(token, jwtSecret);
     const user = await User.findById(decoded.userId);
     if (!user) {
       return res.status(401).json({ message: "Пользователь не найден" });

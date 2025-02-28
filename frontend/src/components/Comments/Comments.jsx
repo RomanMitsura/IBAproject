@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import axios from "../../axios";
+import axios from "../../utils/axios";
 import ConfirmModal from "../ConfirmModal";
 import { showError, showSuccess } from "../Notification";
 import CommentForm from "./CommentForm";

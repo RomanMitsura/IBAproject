@@ -4,12 +4,12 @@ import {
   authLogin,
   checkAuth,
 } from "../controllers/authController.js";
-import { registerValidation } from "../validation/atuh.js";
+import { registerValidation, loginValidation } from "../validation/auth.js";
 
 const router = new Router();
 
 router.post("/register", registerValidation, authRegister);
-router.post("/login", authLogin);
+router.post("/login", loginValidation, authLogin);
 router.get("/me", checkAuth);
 
 export default router;

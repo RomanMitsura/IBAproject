@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import VideoCard from "./VideoCard";
 import SkeletonCard from "./SkeletonCard";
-import axios from "../axios";
+import axios from "../utils/axios";
 
 export default function SideAllVideos({ userId, videoId }) {
   const [videos, setVideos] = useState([]);

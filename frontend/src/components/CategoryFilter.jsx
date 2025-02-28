@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "../axios";
+import axios from "../utils/axios";
 
 export default function CategoryFilter({ onCategoryChange, selectedCategory }) {
   const [categories, setCategories] = useState([]);

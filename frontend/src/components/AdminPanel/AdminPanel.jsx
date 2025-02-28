@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CategoriesPanel from "./CategoriesPanel";
 import UsersPanel from "./UsersPanel";
-import axios from "../../axios";
+import axios from "../../utils/axios";
 import ConfirmModal from "../ConfirmModal";
 import { showError, showSuccess } from "../Notification";
 
@@ -14,7 +14,7 @@ export default function AdminPanel() {
   const [editCategoryData, setEditCategoryData] = useState({});
   const [editUserData, setEditUserData] = useState({});
   const [showPasswords, setShowPasswords] = useState({});
-  const [activePanel, setActivePanel] = useState("users"); // По умолчанию открыта панель пользователей
+  const [activePanel, setActivePanel] = useState("users");
   const [isDeleteCategoryModalOpen, setIsDeleteCategoryModalOpen] =
     useState(false);
   const [isDeleteUserModalOpen, setIsDeleteUserModalOpen] = useState(false);
@@ -48,6 +48,19 @@ export default function AdminPanel() {
     );
     setFilteredUsers(filtered);
   }, [searchQuery, users]);
+
+  const handleCreateUser = async (userData) => {
+    try {
+      const response = await axios.post("/admin/users", userData);
+      const newUser = response.data.user;
+      setUsers((prevUsers) => [...prevUsers, newUser]);
+      setFilteredUsers((prevFiltered) => [...prevFiltered, newUser]);
+      showSuccess("Пользователь успешно добавлен");
+    } catch (error) {
+      console.error("Ошибка при создании пользователя:", error);
+      throw error;
+    }
+  };
 
   const handleDeleteCategory = async () => {
     try {
@@ -96,7 +109,6 @@ export default function AdminPanel() {
         </svg>
       </Link>
       <h1 className="font-bold text-2xl text-center">Админ-панель</h1>
-
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setActivePanel("users")}
@@ -147,6 +159,7 @@ export default function AdminPanel() {
             setItemToDelete(id);
             setIsDeleteUserModalOpen(true);
           }}
+          handleCreateUser={handleCreateUser}
         />
       )}
 

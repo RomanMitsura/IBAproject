@@ -24,9 +24,14 @@ export default function HomePage() {
     setSelectedCategory(categoryId);
   };
 
+  const handleLogoClick = () => {
+    setSelectedCategory("");
+    setSortBy("new");
+  };
+
   return (
     <>
-      <Header />
+      <Header onLogoClick={handleLogoClick} />
       <CategoryFilter
         onCategoryChange={handleCategoryChange}
         selectedCategory={selectedCategory}

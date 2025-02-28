@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios";
-import { login } from "../../axios";
+import axios from "../../utils/axios";
+import { login } from "../../utils/axios";
 
 export const loginUser = createAsyncThunk(
   "auth/login",
@@ -38,13 +38,27 @@ const authSlice = createSlice({
     status: "idle",
     error: null,
     isAuthChecked: false,
+    isSessionExpiredModalOpen: false,
+    hasSessionExpiredNotified:
+      localStorage.getItem("hasSessionExpiredNotified") === "true" || false,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthChecked = true;
+      state.isSessionExpiredModalOpen = false;
+      state.hasSessionExpiredNotified = false;
       localStorage.removeItem("token");
+      localStorage.removeItem("hasSessionExpiredNotified");
+    },
+    openSessionExpiredModal: (state) => {
+      state.isSessionExpiredModalOpen = true;
+      state.hasSessionExpiredNotified = true;
+      localStorage.setItem("hasSessionExpiredNotified", "true");
+    },
+    closeSessionExpiredModal: (state) => {
+      state.isSessionExpiredModalOpen = false;
     },
   },
   extraReducers: (builder) => {
@@ -54,7 +68,8 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthChecked = true;
-        localStorage.setItem("token", action.payload.token);
+        state.hasSessionExpiredNotified = false;
+        localStorage.removeItem("hasSessionExpiredNotified");
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
@@ -79,5 +94,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, openSessionExpiredModal, closeSessionExpiredModal } =
+  authSlice.actions;
 export default authSlice.reducer;

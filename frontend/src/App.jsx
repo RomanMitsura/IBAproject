@@ -4,7 +4,6 @@ import { RouterProvider } from "react-router-dom";
 import { fetchAuthMe } from "./redux/slices/auth";
 import { useSelector } from "react-redux";
 import { router } from "./routes/routes";
-import { NotificationContainer } from "./components/Notification";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -22,10 +21,5 @@ export default function App() {
     dispatch(fetchAuthMe());
   }, [dispatch]);
 
-  return (
-    <div>
-      <NotificationContainer />
-      <RouterProvider router={router} />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }

@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 import ThemeToggle from "./ThemeToggle";
 import UserProfile from "./UserProfile";
 
-export default function Header() {
+export default function Header({ onLogoClick }) {
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
@@ -17,6 +17,7 @@ export default function Header() {
   const handleLogoClick = () => {
     dispatch(resetVideos());
     dispatch(fetchVideos({ sortBy: "new" }));
+    onLogoClick();
   };
 
   const handleSearch = () => {

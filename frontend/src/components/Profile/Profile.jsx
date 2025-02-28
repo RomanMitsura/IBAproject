@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { logout } from "../../redux/slices/auth";
-import axios from "../../axios";
+import axios from "../../utils/axios";
 import ConfirmModal from "../../components/ConfirmModal";
 import ProfileHeader from "./ProfileHeader";
 import ProfileNav from "./ProfileNav";

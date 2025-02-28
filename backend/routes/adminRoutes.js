@@ -14,6 +14,8 @@ import {
   deleteVideo,
 } from "../controllers/adminController.js";
 
+import { createUserValidation } from "../validation/auth.js";
+
 const router = express.Router();
 
 router.get("/categories", [authMiddleware, adminMiddleware], getCategories);
@@ -30,7 +32,12 @@ router.delete(
 );
 
 router.get("/users", [authMiddleware, adminMiddleware], getUsers);
-router.post("/users", [authMiddleware, adminMiddleware], createUser);
+router.post(
+  "/users",
+  createUserValidation,
+  [authMiddleware, adminMiddleware],
+  createUser
+);
 router.put("/users/:id", [authMiddleware, adminMiddleware], updateUser);
 router.delete("/users/:id", [authMiddleware, adminMiddleware], deleteUser);
 

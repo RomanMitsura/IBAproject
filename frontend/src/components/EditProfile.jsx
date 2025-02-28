@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "../axios";
+import axios from "../utils/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { NotificationContainer, showError, showSuccess } from "./Notification";

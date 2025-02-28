@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "../utils/axios";
 
 export const userVideosLoader = async ({ params, request }) => {
   const { userId } = params;

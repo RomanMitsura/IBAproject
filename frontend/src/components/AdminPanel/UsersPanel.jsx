@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../../axios";
+import axios from "../../utils/axios";
 import { showError, showSuccess } from "../Notification";
 import UserForm from "./UserForm";
 import UserList from "./UserList";
@@ -24,37 +24,40 @@ export default function UsersPanel({
     role: "user",
   });
 
-  const handleAddUser = async (e) => {
-    e.preventDefault();
+  const handleAddUser = async (userData) => {
+    console.log("Отправляемые данные:", userData);
     try {
-      const res = await axios.post("/admin/users", newUser);
-      setUsers([...users, res.data]);
-      setFilteredUsers([...users, res.data]);
+      const res = await axios.post("/admin/users", userData);
+      console.log("Ответ сервера:", res.data);
+      setUsers([...users, res.data.user]);
+      setFilteredUsers([...filteredUsers, res.data.user]);
       setNewUser({ fullname: "", email: "", password: "", role: "user" });
       showSuccess("Пользователь добавлен");
     } catch (error) {
-      console.error(error);
-      showError("Ошибка при добавлении пользователя");
+      console.error(
+        "Ошибка при добавлении пользователя:",
+        error.response?.data || error
+      );
+      showError(
+        error.response?.data?.message || "Ошибка при добавлении пользователя"
+      );
+      throw error;
     }
-  };
-
-  const handleEditUserInputChange = (id, field, value) => {
-    setEditUserData((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [field]: value },
-    }));
   };
 
   const handleEditUser = async (id) => {
     try {
       const updatedUser = editUserData[id] || {};
-      const res = await axios.put(`/admin/users/${id}`, {
-        fullname:
-          updatedUser.fullname || users.find((u) => u._id === id).fullname,
-        email: updatedUser.email || users.find((u) => u._id === id).email,
+      const currentUser = users.find((u) => u._id === id);
+      const userData = {
+        fullname: updatedUser.fullname || currentUser.fullname,
+        email: updatedUser.email || currentUser.email,
         password: updatedUser.password || undefined,
-        role: updatedUser.role || users.find((u) => u._id === id).role,
-      });
+        role: updatedUser.role || currentUser.role,
+      };
+      console.log("Данные для редактирования:", userData);
+      const res = await axios.put(`/admin/users/${id}`, userData);
+      console.log("Ответ сервера:", res.data);
       const updatedUsers = users.map((user) =>
         user._id === id ? res.data : user
       );
@@ -67,9 +70,19 @@ export default function UsersPanel({
       });
       showSuccess("Пользователь обновлен");
     } catch (error) {
-      console.error(error);
-      showError("Ошибка при обновлении пользователя");
+      console.error(
+        "Ошибка при обновлении пользователя:",
+        error.response?.data || error
+      );
+      throw error;
     }
+  };
+
+  const handleEditUserInputChange = (id, field, value) => {
+    setEditUserData((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [field]: value },
+    }));
   };
 
   const toggleShowPassword = (id) => {
@@ -77,7 +90,7 @@ export default function UsersPanel({
   };
 
   return (
-    <section className=" max-w-4xl mx-auto  p-6  ">
+    <section className="max-w-4xl mx-auto p-6">
       <h2 className="text-xl font-semibold mb-4">Добавление пользователя</h2>
       <UserForm user={newUser} setUser={setNewUser} onSubmit={handleAddUser} />
       <h2 className="text-xl font-semibold mb-4">Пользователи</h2>

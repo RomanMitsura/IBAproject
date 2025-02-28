@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { formatNumber } from "../../formatNumber";
+import { formatNumber } from "../../utils/formatNumber";
 
 export default function VideoInfo({ data }) {
   const views = formatNumber(data?.views || 0);

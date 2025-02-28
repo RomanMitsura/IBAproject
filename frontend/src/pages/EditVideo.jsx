@@ -1,5 +1,5 @@
-import EditVideo from "../components/EditVideo";
+import VideoForm from "../components/VideoForm";
 
 export default function EditVideoPage() {
-  return <EditVideo />;
+  return <VideoForm isEdit={true} />;
 }

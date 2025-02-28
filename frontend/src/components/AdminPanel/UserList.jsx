@@ -1,3 +1,5 @@
+import { showError } from "../Notification";
+
 export default function UserList({
   filteredUsers,
   editUserData,
@@ -7,6 +9,16 @@ export default function UserList({
   handleEditUser,
   openDeleteModal,
 }) {
+  const handleSubmitEdit = async (id) => {
+    try {
+      await handleEditUser(id);
+    } catch (error) {
+      showError(
+        error.response?.data?.message || "Ошибка при обновлении пользователя"
+      );
+    }
+  };
+
   return (
     <div className="space-y-10">
       {filteredUsers.map((user) => (
@@ -140,7 +152,7 @@ export default function UserList({
           </div>
           <div className="flex flex-col gap-4 sm:flex-row md:flex-col md:items-end">
             <button
-              onClick={() => handleEditUser(user._id)}
+              onClick={() => handleSubmitEdit(user._id)}
               className="px-4 py-2 rounded-md bg-main-light hover:bg-light-hover dark:bg-main-dark dark:hover:bg-dark-hover transition duration-300 w-full sm:w-auto"
             >
               <svg

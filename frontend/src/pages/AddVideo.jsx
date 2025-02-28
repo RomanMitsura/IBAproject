@@ -1,5 +1,5 @@
-import AddVideo from "../components/AddVideo";
+import VideoForm from "../components/VideoForm";
 
 export default function AddVideoPage() {
-  return <AddVideo />;
+  return <VideoForm isEdit={false} />;
 }

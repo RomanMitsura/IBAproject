@@ -6,19 +6,63 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: "",
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Введите корректный email";
+    }
+    return "";
+  };
+
+  const validatePassword = (password) => {
+    const minLength = 6;
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+
+    if (password.length < minLength) {
+      return "Пароль должен содержать минимум 6 символов";
+    }
+    if (!hasLetter || !hasNumber) {
+      return "Пароль должен содержать буквы и цифры";
+    }
+    return "";
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrors({ email: "", password: "", general: "" });
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError,
+        general: "",
+      });
+      return;
+    }
+
     try {
-      setError("");
       await dispatch(loginUser({ email, password })).unwrap();
       navigate("/");
     } catch (error) {
       console.error("Ошибка входа:", error);
-      setError(error.message || "Неверный логин или пароль");
+      const serverError = error.message || "Неверный email или пароль";
+      if (serverError === "Неверный email или пароль") {
+        setErrors({ email: "", password: "", general: serverError });
+      } else {
+        setErrors({ email: "", password: "", general: "Ошибка сервера" });
+      }
     }
   };
 
@@ -57,10 +101,17 @@ export default function Login() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.email || errors.general
+                ? "border-red-500"
+                : "focus:border-blue-400 "
+            }`}
             placeholder="Введите email"
             required
           />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+          )}
         </div>
         <div className="flex flex-col gap-1 group relative">
           <label
@@ -74,15 +125,23 @@ export default function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.password || errors.general
+                ? "border-red-500"
+                : "focus:border-blue-400 "
+            }`}
             placeholder="Введите пароль"
             required
           />
+          <p className="text-gray-500 text-xs mt-1">
+            Минимум 6 символов, включая буквы и цифры
+          </p>
+          {errors.password && (
+            <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+          )}
         </div>
-        {error ? (
-          <p className="text-red-500 text-center text-sm">{error}</p>
-        ) : (
-          <p></p>
+        {errors.general && (
+          <p className="text-red-500 text-center text-sm">{errors.general}</p>
         )}
         <button
           type="submit"

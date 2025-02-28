@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux"; // Добавляем useDispatch
-import axios from "../../axios";
+import axios from "../../utils/axios";
 import { showSuccess, showError } from "../Notification";
 import { fetchAuthMe } from "../../redux/slices/auth"; // Импортируем fetchAuthMe
 import VideoPlayer from "./VideoPlayer";

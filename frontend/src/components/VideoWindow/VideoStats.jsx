@@ -1,4 +1,4 @@
-import { formatNumber } from "../../formatNumber";
+import { formatNumber } from "../../utils/formatNumber";
 
 export default function VideoStats({ data, user, onLike, onDislike }) {
   const totalVotes = (data?.likes || 0) + (data?.dislikes || 0);
