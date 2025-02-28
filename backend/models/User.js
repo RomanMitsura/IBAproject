@@ -35,39 +35,30 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("findOneAndDelete", async function (next) {
-  const userId = this._conditions._id; // Получаем ID пользователя
-  console.log("Начинаем удаление видео для пользователя:", userId);
+  const userId = this._conditions._id;
 
   try {
-    // Находим все видео пользователя
     const videos = await Video.find({ user: userId });
-    console.log("Найденные видео:", videos);
 
-    // Удаляем файлы видео
     for (const video of videos) {
       if (video.videoUrl) {
         const videoPath = path.join(process.cwd(), video.videoUrl);
         if (fs.existsSync(videoPath)) {
           fs.unlinkSync(videoPath);
-          console.log("Удалено видео:", videoPath);
         }
       }
       if (video.videoImageUrl) {
         const imagePath = path.join(process.cwd(), video.videoImageUrl);
         if (fs.existsSync(imagePath)) {
           fs.unlinkSync(imagePath);
-          console.log("Удалено изображение:", imagePath);
         }
       }
     }
 
-    // Удаляем все видео из базы данных
     await Video.deleteMany({ user: userId });
-    console.log("Видео успешно удалены из базы данных");
 
     next();
   } catch (error) {
-    console.error("Ошибка при удалении видео:", error);
     next(error);
   }
 });

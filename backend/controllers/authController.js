@@ -39,7 +39,6 @@ export const authRegister = async (req, res) => {
       .status(200)
       .json({ message: "Пользователь успешно добавлен", user: newUser });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
@@ -56,13 +55,11 @@ export const authLogin = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("Пользователь не найден");
       return res.status(400).json({ message: "Неверный email или пароль" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      console.log("Неверный пароль");
       return res.status(400).json({ message: "Неверный email или пароль" });
     }
 
@@ -70,7 +67,6 @@ export const authLogin = async (req, res) => {
       expiresIn: "30d",
     });
 
-    console.log("Успешный вход пользователя:", user.email);
     res.status(200).json({
       success: true,
       token: token,
@@ -83,7 +79,6 @@ export const authLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при входе:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

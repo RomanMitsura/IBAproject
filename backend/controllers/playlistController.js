@@ -2,7 +2,6 @@ import Playlist from "../models/Playlist.js";
 import Video from "../models/Video.js";
 import mongoose from "mongoose";
 
-// Получение всех плейлистов текущего пользователя
 export const getUserPlaylists = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -36,7 +35,6 @@ export const getUserPlaylists = async (req, res) => {
 
     res.status(200).json({ success: true, playlists: transformedPlaylists });
   } catch (error) {
-    console.error("Ошибка при получении плейлистов:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
@@ -80,12 +78,10 @@ export const getPublicPlaylistsByUser = async (req, res) => {
 
     res.status(200).json({ success: true, playlists: transformedPlaylists });
   } catch (error) {
-    console.error("Ошибка при получении публичных плейлистов:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Создание плейлиста
 export const createPlaylist = async (req, res) => {
   try {
     const { title, description, isPublic } = req.body;
@@ -112,12 +108,10 @@ export const createPlaylist = async (req, res) => {
       playlist,
     });
   } catch (error) {
-    console.error("Ошибка при создании плейлиста:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Редактирование плейлиста
 export const updatePlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
@@ -148,12 +142,10 @@ export const updatePlaylist = async (req, res) => {
       playlist,
     });
   } catch (error) {
-    console.error("Ошибка при редактировании плейлиста:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Удаление плейлиста
 export const deletePlaylist = async (req, res) => {
   try {
     const { playlistId } = req.params;
@@ -178,12 +170,10 @@ export const deletePlaylist = async (req, res) => {
       message: "Плейлист удален",
     });
   } catch (error) {
-    console.error("Ошибка при удалении плейлиста:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Добавление видео в плейлист
 export const addVideoToPlaylist = async (req, res) => {
   try {
     const { playlistId, videoId } = req.params;
@@ -222,12 +212,10 @@ export const addVideoToPlaylist = async (req, res) => {
       playlist,
     });
   } catch (error) {
-    console.error("Ошибка при добавлении видео в плейлист:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Удаление видео из плейлиста
 export const removeVideoFromPlaylist = async (req, res) => {
   try {
     const { playlistId, videoId } = req.params;
@@ -257,7 +245,6 @@ export const removeVideoFromPlaylist = async (req, res) => {
       playlist,
     });
   } catch (error) {
-    console.error("Ошибка при удалении видео из плейлиста:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

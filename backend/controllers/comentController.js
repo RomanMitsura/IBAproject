@@ -1,7 +1,6 @@
 import Video from "../models/Video.js";
 import mongoose from "mongoose";
 
-// Добавление комментария
 export const addComment = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -36,12 +35,10 @@ export const addComment = async (req, res) => {
       comment: newComment,
     });
   } catch (error) {
-    console.error("Ошибка при добавлении комментария:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Удаление комментария
 export const removeComment = async (req, res) => {
   try {
     const { commentId, videoId } = req.params;
@@ -88,12 +85,10 @@ export const removeComment = async (req, res) => {
       message: "Комментарий успешно удален",
     });
   } catch (error) {
-    console.error("Ошибка при удалении комментария:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Получение комментариев
 export const getComments = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -136,7 +131,6 @@ export const getComments = async (req, res) => {
       comments,
     });
   } catch (error) {
-    console.error("Ошибка при получении комментариев:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

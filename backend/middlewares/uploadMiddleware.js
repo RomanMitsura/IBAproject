@@ -6,7 +6,6 @@ const ensureUploadsDirectoryExists = () => {
   const uploadsDir = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log("Папка 'uploads' успешно создана");
   }
 };
 

@@ -44,18 +44,15 @@ export default function VideoCard({
       </div>
 
       <div className="flex gap-2 mt-2 px-2 py-1">
-        <Link to={`/profile/${userId}`} className="shrink-0">
-          <img
-            src={videoUserAvatar}
-            alt={`${videoUserName}'s avatar`}
-            className="w-12 h-12 rounded-full object-cover transition-transform duration-300 group-hover:rotate-6"
-            onError={(e) => {
-              console.error("Ошибка загрузки аватара:", videoUserAvatar);
-              e.target.src =
-                "https://i.pinimg.com/736x/4c/85/31/4c8531dbc05c77cb7a5893297977ac89.jpg";
-            }}
-          />
-        </Link>
+        <img
+          src={videoUserAvatar}
+          alt={`${videoUserName}'s avatar`}
+          className="w-12 h-12 rounded-full object-cover transition-transform duration-300 group-hover:rotate-6"
+          onError={(e) => {
+            e.target.src =
+              "https://i.pinimg.com/736x/4c/85/31/4c8531dbc05c77cb7a5893297977ac89.jpg";
+          }}
+        />
 
         <div className="flex flex-col justify-between flex-grow">
           <div className="break-words font-bold">{truncatedTitle}</div>{" "}

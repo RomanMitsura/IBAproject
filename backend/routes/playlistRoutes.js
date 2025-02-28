@@ -6,7 +6,7 @@ import {
   updatePlaylist,
   deletePlaylist,
   getUserPlaylists,
-  getPublicPlaylistsByUser, // Новый маршрут
+  getPublicPlaylistsByUser,
 } from "../controllers/playlistController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 

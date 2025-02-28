@@ -1,6 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { Link } from "react-router-dom";
+import { useMemo } from "react";
 
 export default function CommentItem({
   comment,
@@ -8,6 +9,13 @@ export default function CommentItem({
   canDeleteComment,
   onDelete,
 }) {
+  const formattedDate = useMemo(() => {
+    return formatDistanceToNow(new Date(comment.createdAt), {
+      addSuffix: true,
+      locale: ru,
+    });
+  }, [comment.createdAt]);
+
   return (
     <div className="flex items-start gap-2 w-full max-w-full">
       <Link to={`/profile/${comment.user._id}`} className="flex-shrink-0">
@@ -23,10 +31,7 @@ export default function CommentItem({
             {comment.user.fullname}
           </Link>
           <span className="text-xs font-light text-light-second-text">
-            {formatDistanceToNow(new Date(comment.createdAt), {
-              addSuffix: true,
-              locale: ru,
-            })}
+            {formattedDate}
           </span>
         </div>
         <span className="break-words">{comment.text}</span>

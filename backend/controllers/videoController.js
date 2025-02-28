@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import mongoose from "mongoose";
 
-// Добавление видео
 export const addVideo = async (req, res) => {
   try {
     const { title, description, categories } = req.body;
@@ -20,12 +19,11 @@ export const addVideo = async (req, res) => {
       });
     }
 
-    const userId = req.user?.userId; // Получаем userId из токена
+    const userId = req.user?.userId;
     if (!userId) {
       return res.status(401).json({ message: "Пользователь не авторизован" });
     }
 
-    // Парсим категории из строки JSON в массив
     let categoriesArray;
     try {
       categoriesArray = JSON.parse(categories);
@@ -38,7 +36,6 @@ export const addVideo = async (req, res) => {
       return res.status(400).json({ message: "Некорректный формат категорий" });
     }
 
-    // Проверяем валидность каждого ID категории
     for (const catId of categoriesArray) {
       if (!mongoose.Types.ObjectId.isValid(catId)) {
         return res
@@ -47,11 +44,9 @@ export const addVideo = async (req, res) => {
       }
     }
 
-    // Получаем пути к загруженным файлам
     const videoFile = req.files["video"][0];
     const imageFile = req.files["image"][0];
 
-    // Создаем новое видео без тегов
     const newVideo = new Video({
       title,
       description,
@@ -61,10 +56,8 @@ export const addVideo = async (req, res) => {
       user: userId,
     });
 
-    // Сохраняем видео
     await newVideo.save();
 
-    // Подгружаем данные пользователя и категорий
     const populatedVideo = await Video.findById(newVideo._id)
       .populate("user", "fullname avatarUrl")
       .populate("categories", "name")
@@ -88,12 +81,10 @@ export const addVideo = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при добавлении видео:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Получение одного видео
 export const getOneVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -142,12 +133,10 @@ export const getOneVideo = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при получении видео:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Получение всех видео
 export const getAllVideos = async (req, res) => {
   try {
     const { category, sortBy, search } = req.query;
@@ -226,12 +215,10 @@ export const getAllVideos = async (req, res) => {
       videos: formattedVideos,
     });
   } catch (error) {
-    console.error("Ошибка при получении видео:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Удаление видео
 export const removeVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -260,14 +247,10 @@ export const removeVideo = async (req, res) => {
 
     if (fs.existsSync(videoFilePath)) {
       fs.unlinkSync(videoFilePath);
-    } else {
-      console.warn("Видеофайл не найден:", videoFilePath);
     }
 
     if (fs.existsSync(imageFilePath)) {
       fs.unlinkSync(imageFilePath);
-    } else {
-      console.warn("Изображение не найдено:", imageFilePath);
     }
 
     await Video.findByIdAndDelete(videoId);
@@ -277,12 +260,10 @@ export const removeVideo = async (req, res) => {
       message: "Видео успешно удалено",
     });
   } catch (error) {
-    console.error("Ошибка при удалении видео:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Редактирование видео
 export const editVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -381,12 +362,10 @@ export const editVideo = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при редактировании видео:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Получение видео пользователя
 export const getUserVideos = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -452,12 +431,10 @@ export const getUserVideos = async (req, res) => {
       videos: formattedVideos,
     });
   } catch (error) {
-    console.error("Ошибка при получении видео пользователя:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Поставить лайк
 export const likeVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -500,12 +477,10 @@ export const likeVideo = async (req, res) => {
       dislikedBy: video.dislikedBy,
     });
   } catch (error) {
-    console.error("Ошибка при постановке лайка:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Поставить дизлайк
 export const dislikeVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -548,7 +523,6 @@ export const dislikeVideo = async (req, res) => {
       dislikedBy: video.dislikedBy,
     });
   } catch (error) {
-    console.error("Ошибка при постановке дизлайка:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };

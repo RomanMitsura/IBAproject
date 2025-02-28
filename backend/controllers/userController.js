@@ -3,11 +3,9 @@ import path from "path";
 import User from "../models/User.js";
 import fs from "fs";
 import jwt from "jsonwebtoken";
-
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-// Изменение данных пользователя
 export const editUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -40,7 +38,6 @@ export const editUser = async (req, res) => {
         );
         if (fs.existsSync(oldAvatarPath)) {
           fs.unlinkSync(oldAvatarPath);
-          console.log(`Удален старый аватар: ${oldAvatarPath}`);
         }
       }
       user.avatarUrl = `/uploads/${req.file.filename}`;
@@ -76,12 +73,10 @@ export const editUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при редактировании профиля:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// Удаление пользователя
 export const deleteUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -114,12 +109,10 @@ export const deleteUser = async (req, res) => {
       message: "Профиль успешно удален",
     });
   } catch (error) {
-    console.error("Ошибка при удалении профиля:", error);
     res.status(500).json({ message: "Ошибка сервера" });
   }
 };
 
-// routes/users.js
 export const getUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -152,7 +145,6 @@ export const getUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Ошибка при получении профиля пользователя:", error);
     return res.status(500).json({ message: "Ошибка сервера" });
   }
 };

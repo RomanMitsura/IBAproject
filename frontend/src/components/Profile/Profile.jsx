@@ -21,7 +21,6 @@ export default function Profile() {
       const response = await axios.get(`/users/${id}`);
       setProfileUser(response.data.user);
     } catch (error) {
-      console.error("Ошибка при загрузке профиля:", error);
       if (error.response?.status === 404) {
         navigate("/not-found");
       } else {
@@ -39,7 +38,6 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("Токен не найден");
         navigate("/login");
         return;
       }
@@ -53,7 +51,6 @@ export default function Profile() {
         navigate("/");
       }
     } catch (error) {
-      console.error("Ошибка при удалении профиля:", error);
       navigate("/error");
     }
   };

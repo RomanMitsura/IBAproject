@@ -35,7 +35,6 @@ export const createCategory = async (req, res) => {
     await category.save();
     res.json(category);
   } catch (error) {
-    console.error("Ошибка в createCategory:", error);
     res
       .status(400)
       .json({ message: "Ошибка при создании категории", error: error.message });
@@ -110,7 +109,6 @@ export const createUser = async (req, res) => {
     await user.save();
     res.json({ message: "Пользователь успешно создан", user });
   } catch (error) {
-    console.error("Ошибка при создании пользователя:", error);
     res.status(400).json({
       message: "Ошибка при создании пользователя",
       error: error.message,
@@ -155,10 +153,8 @@ export const updateUser = async (req, res) => {
       return res.status(404).json({ message: "Пользователь не найден" });
     }
 
-    console.log("Обновлённый пользователь:", user);
     res.json(user);
   } catch (error) {
-    console.error("Ошибка при обновлении пользователя:", error);
     res.status(400).json({ message: "Ошибка при обновлении пользователя" });
   }
 };

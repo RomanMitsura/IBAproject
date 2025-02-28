@@ -22,10 +22,8 @@ export default function ProtectedRoute({
             headers: { Authorization: `Bearer ${token}` },
           });
           const video = response.data.video;
-          console.log("Video data:", video);
           setVideoCreatorId(video.user._id || video.user);
         } catch (error) {
-          console.error("Ошибка при проверке создателя:", error);
           setVideoCreatorId(null);
           showError("Не удалось загрузить данные видео");
         } finally {
@@ -37,16 +35,6 @@ export default function ProtectedRoute({
     };
     checkCreator();
   }, [videoId, token, requireCreator]);
-
-  console.log("ProtectedRoute state:", {
-    isAuthenticated,
-    user,
-    token,
-    videoCreatorId,
-    isLoading,
-    requireAdmin,
-    requireCreator,
-  });
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -71,6 +59,5 @@ export default function ProtectedRoute({
     return <Navigate to="/" replace />;
   }
 
-  console.log("Rendering Outlet");
   return <Outlet />;
 }
