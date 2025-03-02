@@ -16,6 +16,7 @@ export default function RegisterForm() {
   const navigate = useNavigate();
 
   const validateUsername = (username) => {
+    if (!username) return "Поле обязательно для заполнения";
     if (username.length < 2) {
       return "Имя пользователя должно содержать минимум 2 символа";
     }
@@ -23,6 +24,7 @@ export default function RegisterForm() {
   };
 
   const validateEmail = (email) => {
+    if (!email) return "Поле обязательно для заполнения";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return "Введите корректный email";
@@ -31,6 +33,7 @@ export default function RegisterForm() {
   };
 
   const validatePassword = (password) => {
+    if (!password) return "Поле обязательно для заполнения";
     const minLength = 6;
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -138,7 +141,6 @@ export default function RegisterForm() {
               errors.username ? "border-red-500" : "focus:border-blue-400 "
             }`}
             placeholder="Введите имя пользователя"
-            required
           />
           {errors.username && (
             <p className="text-red-500 text-xs mt-1">{errors.username}</p>
@@ -161,7 +163,6 @@ export default function RegisterForm() {
               errors.email ? "border-red-500" : "focus:border-blue-400 "
             }`}
             placeholder="Введите email"
-            required
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -184,7 +185,6 @@ export default function RegisterForm() {
               errors.password ? "border-red-500" : "focus:border-blue-400 "
             }`}
             placeholder="Введите пароль"
-            required
           />
           <p className="text-light-second-text text-xs mt-1">
             Минимум 6 символов, включая буквы и цифры

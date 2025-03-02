@@ -4,26 +4,29 @@ export default function UserForm({ user, setUser, onSubmit }) {
   const [errors, setErrors] = useState({});
 
   const validateFullname = (fullname) => {
-    if (!fullname || fullname.length < 2) {
+    if (!fullname) return "Поле обязательно для заполнения";
+    if (fullname.length < 2) {
       return "Имя пользователя должно содержать минимум 2 символа";
     }
     return "";
   };
 
   const validateEmail = (email) => {
+    if (!email) return "Поле обязательно для заполнения";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
+    if (!emailRegex.test(email)) {
       return "Введите корректный email";
     }
     return "";
   };
 
   const validatePassword = (password) => {
+    if (!password) return "Поле обязательно для заполнения";
     const minLength = 6;
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
 
-    if (!password || password.length < minLength) {
+    if (password.length < minLength) {
       return "Пароль должен содержать минимум 6 символов";
     }
     if (!hasLetter || !hasNumber) {
@@ -101,8 +104,12 @@ export default function UserForm({ user, setUser, onSubmit }) {
             errors.fullname ? "border-red-500" : "focus:border-blue-400 "
           }`}
           placeholder="Введите имя"
-          required
         />
+        {errors.fullname && (
+          <p className="text-red-500 text-xs mt-1">
+            {validateFullname(user.fullname)}
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-1 group relative">
         <label
@@ -120,8 +127,12 @@ export default function UserForm({ user, setUser, onSubmit }) {
             errors.email ? "border-red-500" : "focus:border-blue-400"
           }`}
           placeholder="Введите email"
-          required
         />
+        {errors.email && (
+          <p className="text-red-500 text-xs mt-1">
+            {validateEmail(user.email)}
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-1 group relative">
         <label
@@ -139,8 +150,12 @@ export default function UserForm({ user, setUser, onSubmit }) {
             errors.password ? "border-red-500" : "focus:border-blue-400 "
           }`}
           placeholder="Введите пароль"
-          required
         />
+        {errors.password && (
+          <p className="text-red-500 text-xs mt-1">
+            {validatePassword(user.password)}
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-1 group relative">
         <label

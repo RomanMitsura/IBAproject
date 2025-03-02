@@ -22,6 +22,7 @@ instance.interceptors.response.use(
         localStorage.getItem("hasSessionExpiredNotified") === "true";
       if (!hasNotified) {
         store.dispatch(openSessionExpiredModal());
+        localStorage.setItem("hasSessionExpiredNotified", "true");
       }
     }
     return Promise.reject(error);

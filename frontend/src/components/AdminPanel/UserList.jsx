@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { showError } from "../Notification";
 
 export default function UserList({
@@ -9,7 +10,61 @@ export default function UserList({
   handleEditUser,
   openDeleteModal,
 }) {
+  const [errors, setErrors] = useState({});
+
+  const validateFullname = (fullname) => {
+    if (fullname && fullname.length < 2) {
+      return "Имя пользователя должно содержать минимум 2 символа";
+    }
+    return "";
+  };
+
+  const validateEmail = (email) => {
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return "Введите корректный email";
+      }
+    }
+    return "";
+  };
+
+  const validatePassword = (password) => {
+    if (password) {
+      const minLength = 6;
+      const hasLetter = /[a-zA-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+
+      if (password.length < minLength) {
+        return "Пароль должен содержать минимум 6 символов";
+      }
+      if (!hasLetter || !hasNumber) {
+        return "Пароль должен содержать буквы и цифры";
+      }
+    }
+    return "";
+  };
+
   const handleSubmitEdit = async (id) => {
+    setErrors((prev) => ({ ...prev, [id]: {} }));
+
+    const userData = editUserData[id] || {};
+    const fullnameError = validateFullname(userData.fullname);
+    const emailError = validateEmail(userData.email);
+    const passwordError = validatePassword(userData.password);
+
+    if (fullnameError || emailError || passwordError) {
+      setErrors((prev) => ({
+        ...prev,
+        [id]: {
+          fullname: fullnameError,
+          email: emailError,
+          password: passwordError,
+        },
+      }));
+      return;
+    }
+
     try {
       await handleEditUser(id);
     } catch (error) {
@@ -42,8 +97,17 @@ export default function UserList({
                     e.target.value
                   )
                 }
-                className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+                className={`px-3 py-2 rounded border focus:outline-none ${
+                  errors[user._id]?.fullname
+                    ? "border-red-500"
+                    : "focus:border-blue-400"
+                }`}
               />
+              {errors[user._id]?.fullname && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors[user._id].fullname}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-1 group relative">
               <label
@@ -59,8 +123,17 @@ export default function UserList({
                 onChange={(e) =>
                   handleEditUserInputChange(user._id, "email", e.target.value)
                 }
-                className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+                className={`px-3 py-2 rounded border focus:outline-none ${
+                  errors[user._id]?.email
+                    ? "border-red-500"
+                    : "focus:border-blue-400"
+                }`}
               />
+              {errors[user._id]?.email && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors[user._id].email}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-4 flex-1">
@@ -83,7 +156,11 @@ export default function UserList({
                       e.target.value
                     )
                   }
-                  className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400 w-full"
+                  className={`px-3 py-2 rounded border focus:outline-none ${
+                    errors[user._id]?.password
+                      ? "border-red-500"
+                      : "focus:border-blue-400"
+                  } w-full`}
                   placeholder="Введите новый пароль"
                 />
                 <button
@@ -129,6 +206,11 @@ export default function UserList({
                   )}
                 </button>
               </div>
+              {errors[user._id]?.password && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors[user._id].password}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-1 group relative">
               <label

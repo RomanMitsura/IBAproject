@@ -15,6 +15,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
+    if (!email) return "Поле обязательно для заполнения";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return "Введите корректный email";
@@ -23,6 +24,7 @@ export default function Login() {
   };
 
   const validatePassword = (password) => {
+    if (!password) return "Поле обязательно для заполнения";
     const minLength = 6;
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -107,7 +109,6 @@ export default function Login() {
                 : "focus:border-blue-400 "
             }`}
             placeholder="Введите email"
-            required
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -131,7 +132,6 @@ export default function Login() {
                 : "focus:border-blue-400 "
             }`}
             placeholder="Введите пароль"
-            required
           />
           <p className="text-light-second-text text-xs mt-1">
             Минимум 6 символов, включая буквы и цифры

@@ -10,7 +10,13 @@ export default function VideoForm({ isEdit = false }) {
   const [imageFile, setImageFile] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    video: "",
+    image: "",
+    categories: "",
+  });
   const navigate = useNavigate();
   const { videoId } = useParams();
 
@@ -21,7 +27,10 @@ export default function VideoForm({ isEdit = false }) {
         setCategories(response.data);
       } catch (error) {
         console.error("Ошибка при загрузке категорий:", error);
-        setError("Не удалось загрузить категории");
+        setErrors((prev) => ({
+          ...prev,
+          categories: "Не удалось загрузить категории",
+        }));
       }
     };
 
@@ -34,7 +43,10 @@ export default function VideoForm({ isEdit = false }) {
         setSelectedCategories(video.categories.map((cat) => cat._id || cat));
       } catch (error) {
         console.error("Ошибка при загрузке видео:", error);
-        setError("Не удалось загрузить данные видео");
+        setErrors((prev) => ({
+          ...prev,
+          general: "Не удалось загрузить данные видео",
+        }));
       }
     };
 
@@ -43,6 +55,20 @@ export default function VideoForm({ isEdit = false }) {
       fetchVideoData();
     }
   }, [isEdit, videoId]);
+
+  const validateForm = () => {
+    const newErrors = {
+      title: !title ? "Поле обязательно для заполнения" : "",
+      description: !description ? "Поле обязательно для заполнения" : "",
+      video: !isEdit && !videoFile ? "Поле обязательно для заполнения" : "",
+      image: !isEdit && !imageFile ? "Поле обязательно для заполнения" : "",
+      categories:
+        selectedCategories.length === 0
+          ? "Выберите хотя бы одну категорию"
+          : "",
+    };
+    return newErrors;
+  };
 
   const handleCategoryToggle = (categoryId) => {
     setSelectedCategories((prev) =>
@@ -54,14 +80,21 @@ export default function VideoForm({ isEdit = false }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      setError("");
-      if (selectedCategories.length === 0) {
-        showError("Выберите хотя бы одну категорию");
-        setError("Выберите хотя бы одну категорию");
-        return;
-      }
+    setErrors({
+      title: "",
+      description: "",
+      video: "",
+      image: "",
+      categories: "",
+    });
 
+    const validationErrors = validateForm();
+    if (Object.values(validationErrors).some((error) => error)) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
@@ -86,7 +119,7 @@ export default function VideoForm({ isEdit = false }) {
           response.data.message ||
           (isEdit ? "Ошибка при редактировании" : "Ошибка при добавлении");
         showError(errorMessage);
-        setError(errorMessage);
+        setErrors((prev) => ({ ...prev, general: errorMessage }));
       }
     } catch (error) {
       const errorMessage =
@@ -99,7 +132,7 @@ export default function VideoForm({ isEdit = false }) {
         `Ошибка при ${isEdit ? "редактировании" : "добавлении"} видео:`,
         error
       );
-      setError(errorMessage);
+      setErrors((prev) => ({ ...prev, general: errorMessage }));
     }
   };
 
@@ -142,10 +175,14 @@ export default function VideoForm({ isEdit = false }) {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.title ? "border-red-500" : "focus:border-blue-400"
+            }`}
             placeholder="Введите заголовок"
-            required
           />
+          {errors.title && (
+            <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 group relative">
@@ -159,11 +196,15 @@ export default function VideoForm({ isEdit = false }) {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.description ? "border-red-500" : "focus:border-blue-400"
+            }`}
             placeholder="Введите описание"
             rows="3"
-            required
           />
+          {errors.description && (
+            <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -184,6 +225,9 @@ export default function VideoForm({ isEdit = false }) {
               </button>
             ))}
           </div>
+          {errors.categories && (
+            <p className="text-red-500 text-xs mt-1">{errors.categories}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 group relative">
@@ -198,9 +242,13 @@ export default function VideoForm({ isEdit = false }) {
             type="file"
             accept="video/*"
             onChange={(e) => setVideoFile(e.target.files[0])}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
-            required={!isEdit}
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.video ? "border-red-500" : "focus:border-blue-400"
+            }`}
           />
+          {errors.video && (
+            <p className="text-red-500 text-xs mt-1">{errors.video}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1 group relative">
@@ -218,12 +266,18 @@ export default function VideoForm({ isEdit = false }) {
             type="file"
             accept="image/*"
             onChange={(e) => setImageFile(e.target.files[0])}
-            className="px-3 py-2 rounded border focus:outline-none focus:border-blue-400"
-            required={!isEdit}
+            className={`px-3 py-2 rounded border focus:outline-none ${
+              errors.image ? "border-red-500" : "focus:border-blue-400"
+            }`}
           />
+          {errors.image && (
+            <p className="text-red-500 text-xs mt-1">{errors.image}</p>
+          )}
         </div>
 
-        {error && <p className="text-red-500 text-center text-sm">{error}</p>}
+        {errors.general && (
+          <p className="text-red-500 text-center text-sm">{errors.general}</p>
+        )}
 
         <button
           type="submit"

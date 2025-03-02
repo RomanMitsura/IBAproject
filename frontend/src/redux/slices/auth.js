@@ -53,9 +53,10 @@ const authSlice = createSlice({
       localStorage.removeItem("hasSessionExpiredNotified");
     },
     openSessionExpiredModal: (state) => {
-      state.isSessionExpiredModalOpen = true;
-      state.hasSessionExpiredNotified = true;
-      localStorage.setItem("hasSessionExpiredNotified", "true");
+      if (!state.hasSessionExpiredNotified) {
+        state.isSessionExpiredModalOpen = true;
+        state.hasSessionExpiredNotified = true;
+      }
     },
     closeSessionExpiredModal: (state) => {
       state.isSessionExpiredModalOpen = false;
@@ -68,6 +69,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthChecked = true;
+        state.isSessionExpiredModalOpen = false;
         state.hasSessionExpiredNotified = false;
         localStorage.removeItem("hasSessionExpiredNotified");
       })
